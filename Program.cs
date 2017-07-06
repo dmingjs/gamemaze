@@ -20,9 +20,9 @@ namespace GameMazeCreator_01
 			mazeN = MazeGeneratorCommon.CreateTerrainMaze (mazeN);
 			maze.neighborMazes.Add (MazeCommon.N, mazeN);
 
-			MazeGeneratorCommon.AdjustMazeBorder (mazeS);
-			//mazeS = MazeGeneratorCommon.CreateTerrainMaze (mazeS);
-			//maze.neighborMazes.Add (MazeCommon.S, mazeS);
+			mazeS = MazeGeneratorCommon.AdjustMazeBorder (mazeS);
+			mazeS = MazeGeneratorCommon.CreateTerrainMaze (mazeS);
+			maze.neighborMazes.Add (MazeCommon.S, mazeS);
 
 			mazeW = MazeGeneratorCommon.AdjustMazeBorder (mazeW);
 			mazeW = MazeGeneratorCommon.CreateTerrainMaze (mazeW);

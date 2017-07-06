@@ -9,7 +9,6 @@ namespace GameMazeCreator_01
 	{
 		int width, height;
 		string mode;
-		int seed;
 
 		int[,] grid;
 
@@ -282,9 +281,16 @@ namespace GameMazeCreator_01
 					this.maze [i, j].level = 0;
 				}
 			}
-			this.terrainMaze = new Cell[height * 2, width * 2];
+			this.terrainMaze = new Cell[0, 0];
 			this.spaces = new Space[0, 0];
 			this.neighborMazes = new Dictionary<int, Maze> ();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GameMazeCreator_01.Maze"/> struct.
+		/// default is width == 9, height == 9;
+		/// </summary>
+		public Maze() : this (9, 9) {
 		}
 	}
 	

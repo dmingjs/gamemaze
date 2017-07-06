@@ -222,6 +222,7 @@ namespace GameMazeCreator_01
 					for (int x = 0; x < width; x++) {
 						if ((maze.neighborMazes [MazeCommon.N].maze [y, x].direction & MazeCommon.S) != 0) {
 							maze.maze [0, x].direction |= MazeCommon.N;
+							maze.maze [0, x].level = maze.neighborMazes [MazeCommon.N].maze [y, x].level;
 						}
 					}
 				}
@@ -237,6 +238,7 @@ namespace GameMazeCreator_01
 					for (int x = 0; x < width; x++) {
 						if ((maze.neighborMazes [MazeCommon.S].maze [y, x].direction & MazeCommon.N) != 0) {
 							maze.maze [height - 1, x].direction |= MazeCommon.S;
+							maze.maze [height - 1, x].level = maze.neighborMazes [MazeCommon.S].maze [y, x].level;
 						}
 					}
 				}
@@ -253,6 +255,7 @@ namespace GameMazeCreator_01
 					for (int y = 0; y < height; y++) {
 						if ((maze.neighborMazes [MazeCommon.W].maze [y, x].direction & MazeCommon.E) != 0) {
 							maze.maze [y, 0].direction |= MazeCommon.W;
+							maze.maze [y, 0].level = maze.neighborMazes [MazeCommon.W].maze [y, x].level;
 						}
 					}
 				}
@@ -269,6 +272,7 @@ namespace GameMazeCreator_01
 					for (int y = 0; y < height; y++) {
 						if ((maze.neighborMazes [MazeCommon.E].maze [y, x].direction & MazeCommon.W) != 0) {
 							maze.maze [y, width - 1].direction |= MazeCommon.E;
+							maze.maze [y, width - 1].level = maze.neighborMazes [MazeCommon.E].maze [y, x].level;
 						}
 					}
 				}
@@ -288,9 +292,17 @@ namespace GameMazeCreator_01
 			Cell[,] grid = maze.maze.Clone () as Cell[,];
 			//Cell[,] terrainGrid = new Cell[height * 2, width * 2];
 
-			//继承属性，除了maze.maze不继承
-			Maze result = new Maze (width * 2, height * 2);
+
 			Cell[,] terrainGrid = new Cell[height * 2, width * 2];
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					for (int tempY = 0; tempY < 2; tempY++) {
+						for (int tempX = 0; tempX < 2; tempX++) {
+							terrainGrid [tempY + y * 2, tempX + x * 2].level = grid [y, x].level; 
+						}
+					}
+				}
+			}
 
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
@@ -306,12 +318,12 @@ namespace GameMazeCreator_01
 								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
 								terrainGrid [0 + y * 2, temp + x * 2].direction |= MazeCommon.N;
 							} 
-						} else if (result.neighborMazes.ContainsKey (MazeCommon.N) && //else y == 0
-							result.neighborMazes [MazeCommon.N].terrainMaze.GetLength (0) == height * 2 &&
-							result.neighborMazes [MazeCommon.N].terrainMaze.GetLength (1) == width * 2) {
-							if ((result.neighborMazes [MazeCommon.N].terrainMaze [height * 2 - 1, 0 + x * 2].direction & MazeCommon.S) != 0) {
+						} else if (maze.neighborMazes.ContainsKey (MazeCommon.N) && //else y == 0
+							maze.neighborMazes [MazeCommon.N].terrainMaze.GetLength (0) == height * 2 &&
+							maze.neighborMazes [MazeCommon.N].terrainMaze.GetLength (1) == width * 2) {
+							if ((maze.neighborMazes [MazeCommon.N].terrainMaze [height * 2 - 1, 0 + x * 2].direction & MazeCommon.S) != 0) {
 								terrainGrid [y * 2, 0 + x * 2].direction |= MazeCommon.N;
-							} else if ((result.neighborMazes [MazeCommon.N].terrainMaze [height * 2 - 1, 1 + x * 2].direction & MazeCommon.S) != 0) {
+							} else if ((maze.neighborMazes [MazeCommon.N].terrainMaze [height * 2 - 1, 1 + x * 2].direction & MazeCommon.S) != 0) {
 								terrainGrid [y * 2, 1 + x * 2].direction |= MazeCommon.N;
 							}
 
@@ -331,18 +343,18 @@ namespace GameMazeCreator_01
 								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
 								terrainGrid [1 + y * 2, temp + x * 2].direction |= MazeCommon.S;
 							}
-						} else if (result.neighborMazes.ContainsKey (MazeCommon.S) &&
-							result.neighborMazes [MazeCommon.S].terrainMaze.GetLength (0) == height * 2 &&
-							result.neighborMazes [MazeCommon.S].terrainMaze.GetLength (1) == width * 2) {
-							if ((result.neighborMazes [MazeCommon.N].terrainMaze [0, 0 + x * 2].direction & MazeCommon.N) != 0) {
+						} else if (maze.neighborMazes.ContainsKey (MazeCommon.S) &&
+							maze.neighborMazes [MazeCommon.S].terrainMaze.GetLength (0) == height * 2 &&
+							maze.neighborMazes [MazeCommon.S].terrainMaze.GetLength (1) == width * 2) {
+							if ((maze.neighborMazes [MazeCommon.S].terrainMaze [0, 0 + x * 2].direction & MazeCommon.N) != 0) {
 								terrainGrid [1 + y * 2, 0 + x * 2].direction |= MazeCommon.S;
-							} else if ((result.neighborMazes [MazeCommon.N].terrainMaze [0, 1 + x * 2].direction & MazeCommon.N) != 0) {
+							} else if ((maze.neighborMazes [MazeCommon.S].terrainMaze [0, 1 + x * 2].direction & MazeCommon.N) != 0) {
 								terrainGrid [1 + y * 2, 1 + x * 2].direction |= MazeCommon.S;
 							}
 
 						} else {
 							int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-							terrainGrid [1 + y * 2, temp + x * 2].direction |= MazeCommon.N;
+							terrainGrid [1 + y * 2, temp + x * 2].direction |= MazeCommon.S;
 						}
 					}
 					// W
@@ -356,12 +368,12 @@ namespace GameMazeCreator_01
 								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
 								terrainGrid [temp + y * 2, 0 + x * 2].direction |= MazeCommon.W; // (temp, 0)
 							}
-						} else if (result.neighborMazes.ContainsKey (MazeCommon.W) && // x == 0
-							result.neighborMazes [MazeCommon.W].terrainMaze.GetLength (0) == height * 2 &&
-							result.neighborMazes [MazeCommon.W].terrainMaze.GetLength (1) == width * 2) {
-							if ((result.neighborMazes [MazeCommon.W].terrainMaze [0 + y * 2, width * 2 - 1].direction & MazeCommon.E) != 0) {
+						} else if (maze.neighborMazes.ContainsKey (MazeCommon.W) && // x == 0
+							maze.neighborMazes [MazeCommon.W].terrainMaze.GetLength (0) == height * 2 &&
+							maze.neighborMazes [MazeCommon.W].terrainMaze.GetLength (1) == width * 2) {
+							if ((maze.neighborMazes [MazeCommon.W].terrainMaze [0 + y * 2, width * 2 - 1].direction & MazeCommon.E) != 0) {
 								terrainGrid [0 + y * 2, x * 2].direction |= MazeCommon.W;
-							} else if ((result.neighborMazes [MazeCommon.W].terrainMaze [1 + y * 2, width * 2 - 1].direction & MazeCommon.E) != 0) {
+							} else if ((maze.neighborMazes [MazeCommon.W].terrainMaze [1 + y * 2, width * 2 - 1].direction & MazeCommon.E) != 0) {
 								terrainGrid [1 + y * 2, x * 2].direction |= MazeCommon.W;
 							}
 
@@ -381,13 +393,13 @@ namespace GameMazeCreator_01
 								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
 								terrainGrid [temp + y * 2, 1 + x * 2].direction |= MazeCommon.E; // (temp, 1)
 							} 
-						} else if (result.neighborMazes.ContainsKey (MazeCommon.E) && // x == width - 1
-							result.neighborMazes [MazeCommon.E].terrainMaze.GetLength (0) == height * 2 &&
-							result.neighborMazes [MazeCommon.E].terrainMaze.GetLength (1) == width * 2) {
-							if ((result.neighborMazes [MazeCommon.E].terrainMaze [0 + y * 2, 0].direction & MazeCommon.W) != 0) {
+						} else if (maze.neighborMazes.ContainsKey (MazeCommon.E) && // x == width - 1
+							maze.neighborMazes [MazeCommon.E].terrainMaze.GetLength (0) == height * 2 &&
+							maze.neighborMazes [MazeCommon.E].terrainMaze.GetLength (1) == width * 2) {
+							if ((maze.neighborMazes [MazeCommon.E].terrainMaze [0 + y * 2, 0].direction & MazeCommon.W) != 0) {
 								terrainGrid [0 + y * 2, 1 + x * 2].direction |= MazeCommon.E;
 							}
-							else if ((result.neighborMazes [MazeCommon.E].terrainMaze [1 + y * 2, 0].direction & MazeCommon.W) != 0) {
+							else if ((maze.neighborMazes [MazeCommon.E].terrainMaze [1 + y * 2, 0].direction & MazeCommon.W) != 0) {
 								terrainGrid [1 + y * 2, 1 + x * 2].direction |= MazeCommon.E;
 							}
 
@@ -521,130 +533,6 @@ namespace GameMazeCreator_01
 			return maze;
 		}
 
-		// check when neighbor maze done!
-		/*
-		public static int[,] CreateMazeX2_WithBlocks(Maze maze) {
-
-			Cell[,] grid = maze.maze;
-			int height = grid.GetLength (0);
-			int width = grid.GetLength (1);
-			Cell[,] result = new Cell[height * 2, width * 2 ];
-
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < width; x++) {
-
-					if ((grid [y, x] & MazeCommon.N) != 0) {
-						if (y > 0) {
-							if ((result [-1 + y * 2, 0 + x * 2] & MazeCommon.S) != 0)
-								result [0 + y * 2, 0 + x * 2] |= MazeCommon.N; // (0, 0)
-							else if ((result [-1 + y * 2, 1 + x * 2] & MazeCommon.S) != 0)
-								result [0 + y * 2, 1 + x * 2] |= MazeCommon.N; // (0, 1)
-							else { // not reach by neighbor;
-								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-								result [0 + y * 2, temp + x * 2] |= MazeCommon.N;
-							}
-						} else {
-							int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-							result [0 + y * 2, temp + x * 2] |= MazeCommon.N;
-						}
-					}
-
-					if ((grid [y, x] & MazeCommon.S) != 0 ) {
-						if (y < height - 1) {
-							if ((result [2 + y * 2, 0 + x * 2] & MazeCommon.N) != 0)
-								result [1 + y * 2, 0 + x * 2] |= MazeCommon.S; // (1, 0)
-							else if ((result [2 + y * 2, 1 + x * 2] & MazeCommon.N) != 0)
-								result [1 + y * 2, 1 + x * 2] |= MazeCommon.S; // (1, 1)
-							else { // not reach by neighbor;
-								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-								result [1 + y * 2, temp + x * 2] |= MazeCommon.S;
-							}
-						} else {
-							int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-							result [1 + y * 2, temp + x * 2] |= MazeCommon.S;
-						}
-					}
-
-					if ((grid [y, x] & MazeCommon.W) != 0) {
-						if (x > 0) {
-							if ((result [0 + y * 2, -1 + x * 2] & MazeCommon.E) != 0)
-								result [0 + y * 2, 0 + x * 2] |= MazeCommon.W; // (0, 0)
-							else if ((result [1 + y * 2, -1 + x * 2] & MazeCommon.E) != 0)
-								result [1 + y * 2, 0 + x * 2] |= MazeCommon.W; // (1, 0)
-							else { // not reach by neighbor;
-								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-								result [temp + y * 2, 0 + x * 2] |= MazeCommon.W;
-							}
-						} else {
-							int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-							result [temp + y * 2, 0 + x * 2] |= MazeCommon.W;
-						}
-					}
-
-					if ((grid [y, x] & MazeCommon.E) != 0) {
-						if (x < width - 1) {
-							if ((result [0 + y * 2, 2 + x * 2] & MazeCommon.W) != 0)
-								result [0 + y * 2, 1 + x * 2] |= MazeCommon.E; // (0, 1)
-							else if ((result [1 + y * 2, 2 + x * 2] & MazeCommon.W) != 0)
-								result [1 + y * 2, 1 + x * 2] |= MazeCommon.E; // (1, 1)
-							else { // not reach by neighbor;
-								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-								result [temp + y * 2, 1 + x * 2] |= MazeCommon.E;
-							}
-						} else {
-							int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-							result [temp + y * 2, 1 + x * 2] |= MazeCommon.E;
-						}
-					}
-
-					if (result [0 + y * 2, 0 + x * 2] != 0 && result [1 + y * 2, 1 + x * 2] != 0
-						&& result [0 + y * 2, 1 + x * 2] == 0 && result [1 + y * 2, 0 + x * 2] == 0) {
-						int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-						if (temp == 0) {
-							result [0 + y * 2, 1 + x * 2] |= MazeCommon.W;
-							result [0 + y * 2, 1 + x * 2] |= MazeCommon.S;
-						} else {
-							result [1 + y * 2, 0 + x * 2] |= MazeCommon.E;
-							result [1 + y * 2, 0 + x * 2] |= MazeCommon.N;
-						}
-					} else if (result [0 + y * 2, 0 + x * 2] == 0 && result [1 + y * 2, 1 + x * 2] == 0
-						&& result [0 + y * 2, 1 + x * 2] != 0 && result [1 + y * 2, 0 + x * 2] != 0) {
-						int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
-						if (temp == 0) {
-							result [0 + y * 2, 0 + x * 2] |= MazeCommon.E;
-							result [0 + y * 2, 0 + x * 2] |= MazeCommon.S;
-						} else {
-							result [1 + y * 2, 1 + x * 2] |= MazeCommon.W;
-							result [1 + y * 2, 1 + x * 2] |= MazeCommon.N;
-						}
-					}
-
-					// (0, 0) <--> (0, 1) E, W
-					if (result [0 + y * 2, 0 + x * 2] != 0 && result [0 + y * 2, 1 + x * 2] != 0) {
-						result [0 + y * 2, 0 + x * 2] |= E;
-						result [0 + y * 2, 1 + x * 2] |= W;
-					}
-					// (0, 0) <--> (1, 0) 
-					if (result [0 + y * 2, 0 + x * 2] != 0 && result [1 + y * 2, 0 + x * 2] != 0) {
-						result [0 + y * 2, 0 + x * 2] |= S;
-						result [1 + y * 2, 0 + x * 2] |= N;
-					}
-					// (1, 1) <--> (1, 0) W E
-					if (result [1 + y * 2, 1 + x * 2] != 0 && result [1 + y * 2, 0 + x * 2] != 0) {
-						result [1 + y * 2, 1 + x * 2] |= W;
-						result [1 + y * 2, 0 + x * 2] |= E;
-					}
-					// (1, 1) <--> (0, 1) N S
-					if (result [1 + y * 2, 1 + x * 2] != 0 && result [0 + y * 2, 1 + x * 2] != 0) {
-						result [1 + y * 2, 1 + x * 2] |= N;
-						result [0 + y * 2, 1 + x * 2] |= S;
-					}
-
-				}
-			}
-			//return 
-			return result;
-		}
-	    */
+		//public static Maze 
 	}
 }
