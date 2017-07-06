@@ -8,19 +8,53 @@ namespace GameMazeCreator_01
 		{
 			Console.WriteLine ("Hello World!");
 
-			BasicMazeCreator maze = new BasicMazeCreator (9, 9, "");
+			BasicMazeCreator mazeCreator = new BasicMazeCreator (9, 9, "");
 
-			int[,] grid = maze.GrowingTree_Maze();
-			int[,] gridAdjust = MazeCommon.AdjustMazeBorder (grid);
-			int[,] gridx2Adjust = MazeCommon.GridScaleDoubleWithBlock (gridAdjust);
-			int[,] map = MazeCommon.CreateMapByGrid (gridx2Adjust);
-			int[,] mapx2 = MazeCommon.CreateMapByScaleDoubleGrid (gridx2Adjust);
-			int[,] gridx2AdjustSpace = MazeCommon.MazeInsertSpace (gridx2Adjust, 6);
-			int[,] mapAdjustV2 = MazeCommon.CreateMapByScaleDoubleGrid (gridx2AdjustSpace);
+			Maze mazeN = mazeCreator.GrowingTree_Maze();
+			Maze mazeS = mazeCreator.GrowingTree_Maze();
+			Maze mazeW = mazeCreator.GrowingTree_Maze();
+			Maze mazeE = mazeCreator.GrowingTree_Maze();
+			Maze maze = new Maze (mazeCreator.GetWidth(), mazeCreator.GetHeight());
 
-			MazeCommon.Print2DArrayWithWall (mapAdjustV2);
+			mazeN = MazeGeneratorCommon.AdjustMazeBorder (mazeN);
+			mazeN = MazeGeneratorCommon.CreateTerrainMaze (mazeN);
+			maze.neighborMazes.Add (MazeCommon.N, mazeN);
+
+			MazeGeneratorCommon.AdjustMazeBorder (mazeS);
+			//mazeS = MazeGeneratorCommon.CreateTerrainMaze (mazeS);
+			//maze.neighborMazes.Add (MazeCommon.S, mazeS);
+
+			mazeW = MazeGeneratorCommon.AdjustMazeBorder (mazeW);
+			mazeW = MazeGeneratorCommon.CreateTerrainMaze (mazeW);
+			maze.neighborMazes.Add (MazeCommon.W, mazeW);
+
+			mazeE = MazeGeneratorCommon.AdjustMazeBorder (mazeE);
+			mazeE = MazeGeneratorCommon.CreateTerrainMaze (mazeE);
+			maze.neighborMazes.Add (MazeCommon.E, mazeE);
+
+			MazeGeneratorCommon.InitMazeByNeighbors (maze);
+			maze = mazeCreator.GrowingTree_Maze (maze);
+			//Maze mazeAdjust = MazeGeneratorCommon.AdjustMazeBorder (maze);
+			int[,] map = MazeGeneratorCommon.CreateMapByMaze (maze);
+
+			int[,] mapN = MazeGeneratorCommon.CreateMapByMaze (mazeN);
+			int[,] mapS = MazeGeneratorCommon.CreateMapByMaze (mazeS);
+			Console.WriteLine ("mapN");
+			MazeCommon.Print2DArrayWithWall (mapN);
+			Console.WriteLine ("map");
+			MazeCommon.Print2DArrayWithWall (map);
+			Console.WriteLine ("mapS");
+			MazeCommon.Print2DArrayWithWall (mapS);
 			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
+			maze = MazeGeneratorCommon.CreateTerrainMaze (maze);
+			int[,] terrainMap = MazeGeneratorCommon.CreateMapByTerrainMaze (maze);
+			MazeCommon.Print2DArrayWithWall (terrainMap);
 			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
+
+			maze = MazeGeneratorCommon.TerrainMazeInsertSpaces (maze, 6);
+			terrainMap = MazeGeneratorCommon.CreateMapByTerrainMaze (maze);
+			MazeCommon.Print2DArrayWithWall (terrainMap);
+
 			Console.Read ();
 		}
 	}

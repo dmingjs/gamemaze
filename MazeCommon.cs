@@ -25,11 +25,6 @@ namespace GameMazeCreator_01
 		{
 			System.Console.WriteLine ('_');
 
-			/*for (int y= 0; y < grid.GetLength(0); y++) {
-				for(int x= 0; x < grid.GetLength(0); x++)
-					System.Console.Write(grid[y, x]);
-				System.Console.WriteLine ();
-			}*/
 			int lenY = 1 + (grid.GetLength (0)) * 3;
 			int lenX = 1 + (grid.GetLength (1)) * 3;
 			int[,] map = new int[lenY, lenX ];
@@ -600,7 +595,7 @@ namespace GameMazeCreator_01
 			return grid;
 		}
 
-
+		#region Get Random
 		static Hashtable hashtable = new Hashtable ();
 		static bool isGo = false;
 		//再写一个函数保证一定时间内生成的所有seed都不同
@@ -628,18 +623,27 @@ namespace GameMazeCreator_01
 				}
 			}
 		}
+		#endregion
 
-		struct Space {
-			public int x;
-			public int y;
-			public int height;
-			public int width;
-			public Space(int x, int y, int width, int height){
-				this.x = x;
-				this.y = y;
-				this.width = width;
-				this.height = height;
-			}
+
+	}
+
+	public struct Space {
+		public int x;
+		public int y;
+		public int height;
+		public int width;
+		public int level;
+		public Space(int x, int y, int width, int height){
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+			this.level = 0;
+		}
+
+		public Space(int x, int y, int width, int height, int level) : this (x, y, width, height) {
+			this.level = level;
 		}
 	}
 }
