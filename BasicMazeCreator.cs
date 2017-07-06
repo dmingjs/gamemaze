@@ -25,7 +25,7 @@ namespace GameMazeCreator_01
 			this.height = height;
 			this.mode = mode;
 
-			grid = new int[this.height , this.width];
+			//this.grid = new int[this.height , this.width];
 		}
 		#endregion
 		/*
@@ -41,14 +41,16 @@ namespace GameMazeCreator_01
 
 		public int[,] GrowingTree_Maze()
 		{
+			int height = this.height;
+			int width = this.width;
+			int[,] grid = new int[height, width];
+
 			List<Point> Points = new List<Point> ();
 
-			Random ran = new Random (seed);
-
-			int x = ran.Next(width), y = ran.Next(height);
+			int x = MazeCommon.GetRandom().Next(width), y = MazeCommon.GetRandom().Next(height);
 			Points.Add (new Point (x, y));
 
-			while (Points.Count != 0) 
+			while (Points.Count != 0)
 			{
 				int index = Points.Count;
 				x = Points [index - 1].x;
@@ -64,7 +66,7 @@ namespace GameMazeCreator_01
 					//System.Console.Write (i);
 					System.Threading.Thread.Sleep (1);
 					int nx = x + MazeCommon.DX[tempDR[i]], ny = y + MazeCommon.DY[tempDR[i]];
-					if (nx >= 0 && ny >= 0 && nx < width && ny < height && this.grid [ny, nx] == 0) 
+					if (nx >= 0 && ny >= 0 && nx < width && ny < height && grid [ny, nx] == 0) 
 					{
 						grid [y, x] |= tempDR[i];
 						grid [ny, nx] |= MazeCommon.OPPOSITE [tempDR[i]];
@@ -83,6 +85,7 @@ namespace GameMazeCreator_01
 
 			return grid;
 		}
+			
 
 		//先不处理，可能不用Random blocks都可以。
 		int[,] InitGridWithBlocks(int width, int height, List<Block> blocks) {
@@ -91,7 +94,7 @@ namespace GameMazeCreator_01
 				blocks = GetRandomBlocks (width, height, 6);
 			return grid;
 		}
-
+		//先不处理，可能不用Random blocks都可以。
 		List<Block> GetRandomBlocks(int width, int height, int split) {
 			List<Block> result = new List<Block> ();
 

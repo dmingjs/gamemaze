@@ -17,7 +17,8 @@ namespace GameMazeCreator_01
 		public static Dictionary<int, int> OPPOSITE = new Dictionary<int, int> {{E, W}, {W, E}, {N, S}, {S, N}};
 
 		/// <summary>
-		/// space for floor and # for wall 
+		/// create the map by grid.
+		/// 根据原始grid，生成不带block的简单map 
 		/// </summary>
 		/// <param name="grid">Grid.</param>
 		public static int[,] CreateMapByGrid(int[,] grid)
@@ -80,16 +81,13 @@ namespace GameMazeCreator_01
 
 		public static int[,] CreateMapByScaleDoubleGrid(int[,] grid)
 		{
-			if (grid.GetLength (0) % 2 != 0 && grid.GetLength (1) % 2 != 0)
+			if (grid.GetLength (0) % 2 != 0 && grid.GetLength (1) % 2 != 0) {
+				Console.WriteLine ("CreateMapByScaleDoubleGrid Error!!! height: " + grid.GetLength (0) + ", width: " + grid.GetLength (1));
 				return new int[0, 0];
+			}
 
 			System.Console.WriteLine ('_');
 
-			/*for (int y= 0; y < grid.GetLength(0); y++) {
-				for(int x= 0; x < grid.GetLength(0); x++)
-					System.Console.Write(grid[y, x]);
-				System.Console.WriteLine ();
-			}*/
 			int lenY = 1 + (grid.GetLength (0) / 2) * 3;
 			int lenX = 1 + (grid.GetLength (1) / 2) * 3;
 			int[,] map = new int[lenY, lenX];
@@ -107,6 +105,7 @@ namespace GameMazeCreator_01
 
 					for (int tempY = 0; tempY < 2; tempY++) {
 						for (int tempX = 0; tempX < 2; tempX++) {
+							
 							if (grid [tempY + y * 2, tempX + x * 2] == 0) {
 								map [1 + tempY + y * 3, 1 + tempX + x * 3] = -1;
 							} else {
@@ -141,6 +140,12 @@ namespace GameMazeCreator_01
 
 		}
 
+		/// <summary>
+		/// Creates the map by grid v2.
+		/// 根据原始grid，生成带block的最终map
+		/// </summary>
+		/// <returns>The map by grid v2.</returns>
+		/// <param name="grid">Grid.</param>
 		public static int[,] CreateMapByGridV2(int[,] grid)
 		{
 			System.Console.WriteLine ("version 0.2");
@@ -248,7 +253,44 @@ namespace GameMazeCreator_01
 
 		}
 
-		public static int[,] GridScaleDouble(int[,] grid) {
+		public static int[,] GridScaleDouble (int[,] grid) {
+			int height = grid.GetLength (0);
+			int width = grid.GetLength (1);
+			int[,] result = new int[height * 2, width * 2 ];
+			for (int y = 0; y < height * 2; y++) {
+				for (int x = 0; x < width * 2; x++) {
+					result [y, x] |= (N + S + E + W);
+				}
+			}
+
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					if ((grid [y, x] & N) == 0) {
+						result [y * 2, x * 2] -= N;
+						result [y * 2, x * 2 + 1] -= N;
+					}
+
+					if ((grid [y, x] & S) == 0) {
+						result [y * 2 + 1, x * 2] -= S;
+						result [y * 2 + 1, x * 2 + 1] -= S;
+					}
+
+					if ((grid [y, x] & W) == 0) {
+						result [y * 2, x * 2] -= W;
+						result [y * 2 + 1, x * 2] -= W;
+					}
+
+					if ((grid [y, x] & E) == 0) {
+						result [y * 2, x * 2 + 1] -= E;
+						result [y * 2 + 1, x * 2 + 1] -= E;
+					}
+				}
+			}
+
+			return result;
+		}
+
+		public static int[,] GridScaleDoubleWithBlock(int[,] grid) {
 			int height = grid.GetLength (0);
 			int width = grid.GetLength (1);
 			int[,] result = new int[height * 2, width * 2 ];
@@ -256,46 +298,66 @@ namespace GameMazeCreator_01
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
 					
-					if ((grid [y, x] & N) != 0 && y > 0) {
-						if ((result [-1 + y * 2, 0 + x * 2] & S) != 0) 
-							result [0 + y * 2, 0 + x * 2] |= N; // (0, 0)
-						else if ((result [-1 + y * 2, 1 + x * 2] & S) != 0) 
-							result [0 + y * 2, 1 + x * 2] |= N; // (0, 1)
+					if ((grid [y, x] & N) != 0) {
+						if (y > 0) {
+							if ((result [-1 + y * 2, 0 + x * 2] & S) != 0)
+								result [0 + y * 2, 0 + x * 2] |= N; // (0, 0)
+						else if ((result [-1 + y * 2, 1 + x * 2] & S) != 0)
+								result [0 + y * 2, 1 + x * 2] |= N; // (0, 1)
 						else { // not reach by neighbor;
-							int temp = MazeCommon.GetRandom().Next(0, 2); //get 0 or 1
+								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
+								result [0 + y * 2, temp + x * 2] |= N;
+							}
+						} else {
+							int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
 							result [0 + y * 2, temp + x * 2] |= N;
 						}
 					}
 
-					if ((grid [y, x] & S) != 0 && y < height - 1) {
-						if ((result [2 + y * 2, 0 + x * 2] & N) != 0) 
-							result [1 + y * 2, 0 + x * 2] |= S; // (1, 0)
-						else if ((result [2 + y * 2, 1 + x * 2] & N) != 0) 
-							result [1 + y * 2, 1 + x * 2] |= S; // (1, 1)
+					if ((grid [y, x] & S) != 0 ) {
+						if (y < height - 1) {
+							if ((result [2 + y * 2, 0 + x * 2] & N) != 0)
+								result [1 + y * 2, 0 + x * 2] |= S; // (1, 0)
+						else if ((result [2 + y * 2, 1 + x * 2] & N) != 0)
+								result [1 + y * 2, 1 + x * 2] |= S; // (1, 1)
 						else { // not reach by neighbor;
-							int temp = MazeCommon.GetRandom().Next(0, 2); //get 0 or 1
+								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
+								result [1 + y * 2, temp + x * 2] |= S;
+							}
+						} else {
+							int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
 							result [1 + y * 2, temp + x * 2] |= S;
 						}
 					}
 
-					if ((grid [y, x] & W) != 0 && x > 0) {
-						if ((result [0 + y * 2, -1 + x * 2] & E) != 0)
-							result [0 + y * 2, 0 + x * 2] |= W; // (0, 0)
-						else if ((result [1 + y * 2, -1 + x * 2] & E) != 0) 
-							result [1 + y * 2, 0 + x * 2] |= W; // (1, 0)
+					if ((grid [y, x] & W) != 0) {
+						if (x > 0) {
+							if ((result [0 + y * 2, -1 + x * 2] & E) != 0)
+								result [0 + y * 2, 0 + x * 2] |= W; // (0, 0)
+						else if ((result [1 + y * 2, -1 + x * 2] & E) != 0)
+								result [1 + y * 2, 0 + x * 2] |= W; // (1, 0)
 						else { // not reach by neighbor;
-							int temp = MazeCommon.GetRandom().Next(0, 2); //get 0 or 1
+								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
+								result [temp + y * 2, 0 + x * 2] |= W;
+							}
+						} else {
+							int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
 							result [temp + y * 2, 0 + x * 2] |= W;
 						}
 					}
 
-					if ((grid [y, x] & E) != 0 && x < width - 1) {
-						if ((result [0 + y * 2, 2 + x * 2] & W) != 0)
-							result [0 + y * 2, 1 + x * 2] |= E; // (0, 1)
-						else if ((result [1 + y * 2, 2 + x * 2] & W) != 0) 
-							result [1 + y * 2, 1 + x * 2] |= E; // (1, 1)
+					if ((grid [y, x] & E) != 0) {
+						if (x < width - 1) {
+							if ((result [0 + y * 2, 2 + x * 2] & W) != 0)
+								result [0 + y * 2, 1 + x * 2] |= E; // (0, 1)
+						else if ((result [1 + y * 2, 2 + x * 2] & W) != 0)
+								result [1 + y * 2, 1 + x * 2] |= E; // (1, 1)
 						else { // not reach by neighbor;
-							int temp = MazeCommon.GetRandom().Next(0, 2); //get 0 or 1
+								int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
+								result [temp + y * 2, 1 + x * 2] |= E;
+							}
+						} else {
+							int temp = MazeCommon.GetRandom ().Next (0, 2); //get 0 or 1
 							result [temp + y * 2, 1 + x * 2] |= E;
 						}
 					}
@@ -349,6 +411,9 @@ namespace GameMazeCreator_01
 			return result;
 		}
 
+
+
+		#region Print Funcs
 		public static void PrintArray(int[,] map) {
 			for (int i = 0; i < map.GetLength (0); i++) {
 				for (int j = 0; j < map.GetLength (1); j++) {
@@ -405,20 +470,20 @@ namespace GameMazeCreator_01
 			Console.WriteLine (". count is " + space + ", * count is " + block);
 			Console.WriteLine (". proportion is " + ((float)space / (space + block)) + ", * proportion is " + ((float)block / (space + block)) );
 		}
-
+		#endregion
 
 		/// <summary>
 		/// insert spaceBlocker every (split * split)
 		/// split should > 4
 		/// </summary>
 		/// <returns>The insert space.</returns>
-		/// <param name="maze">Maze.</param>
+		/// <param name="maze">grid. gridx2 with blocks</param>
 		/// <param name="split">Split.</param>
-		public static int[,] MazeInsertSpace(int[,] maze, int split){
-			int height = maze.GetLength (0);
-			int width = maze.GetLength (1);
+		public static int[,] MazeInsertSpace(int[,] gird, int split){
+			int height = gird.GetLength (0);
+			int width = gird.GetLength (1);
 			if (height < split || width < split || split <= 4) // min split is 5
-				return maze;
+				return gird;
 
 			int lenX = width / split;
 			int lenY = height / split;
@@ -453,30 +518,88 @@ namespace GameMazeCreator_01
 					for (int tempY = 0; tempY < spaces [i, j].height; tempY++) {
 						for (int tempX = 0; tempX < spaces [i, j].width; tempX++) {
 							
-							maze [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] |= (N + S + W + E);
+							gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] |= (N + S + W + E);
 
 							if (tempY == 0 && 
-								(maze [tempY + spaces [i, j].y + split * i - 1, tempX + spaces [i, j].x + split * j] & S) == 0) {
-								maze [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= N;
+								(gird [tempY + spaces [i, j].y + split * i - 1, tempX + spaces [i, j].x + split * j] & S) == 0) {
+								gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= N;
 							} else if (tempY == (spaces [i, j].height - 1) &&
-								(maze [tempY + spaces [i, j].y + split * i + 1, tempX + spaces [i, j].x + split * j] & N) == 0){
-								maze [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= S;
+								(gird [tempY + spaces [i, j].y + split * i + 1, tempX + spaces [i, j].x + split * j] & N) == 0){
+								gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= S;
 							}
 
 							if (tempX == 0 &&
-							    (maze [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j - 1] & E) == 0) {
-								maze [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= W;
+								(gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j - 1] & E) == 0) {
+								gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= W;
 							} else if  (tempX == (spaces [i, j].width - 1) &&
-								(maze [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j + 1] & W) == 0) {
-								maze [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= E;
+								(gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j + 1] & W) == 0) {
+								gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= E;
 							}
 						}
 					}
 				}
 			}
 
-			return maze;
+			return gird;
 		}
+
+		public static int[,] AdjustMazeBorder(int[,] grid) {
+			int height = grid.GetLength (0);
+			int width = grid.GetLength (1);
+			int[,] gridClone = grid.Clone () as int[,];
+			// adjust the grid here
+			int y0 = 0;
+			int y1 = 0;
+			int x0 = 0;
+			int x1 = 0;
+
+			// y == 0
+			for (int j = 0; j < width; j++) {
+				if ((gridClone [0, j] & MazeCommon.E) == 0) { // not connect to east direction
+					int tempX = MazeCommon.GetRandom ().Next (x0, j + 1); // get x0 ~ j
+					grid [0, tempX] |= MazeCommon.N;
+					x0 = j + 1;
+				} else {
+					x0 = j;
+				}
+			}
+
+			// y == height - 1 
+			for (int j = 0; j < width; j++) {
+				if ((gridClone [height - 1, j] & MazeCommon.E) == 0) { // not connect to east direction
+					int tempX = MazeCommon.GetRandom ().Next (x1, j + 1); // get x0 ~ j
+					grid [height -1, tempX] |= MazeCommon.S;
+					x1 = j + 1;
+				} else {
+					x1 = j;
+				}
+			}
+
+			// x == 0
+			for (int i = 0; i < height; i++) {
+				if ((gridClone [i, 0] & MazeCommon.S) == 0) { // not connect to south direction
+					int tempY = MazeCommon.GetRandom ().Next (y0, i + 1); // get y0 ~ i
+					grid [tempY, 0] |= MazeCommon.W;
+					y0 = i + 1;
+				} else {
+					y0 = i;
+				}
+			}
+
+			// x == width - 1
+			for (int i = 0; i < height; i++) {
+				if ((gridClone [i, width - 1] & MazeCommon.S) == 0) { // not connect to south direction
+					int tempY = MazeCommon.GetRandom ().Next (y1, i + 1); // get y0 ~ i
+					grid [tempY, width - 1] |= MazeCommon.E;
+					y1 = i + 1;
+				} else {
+					y1 = i;
+				}
+			}
+				
+			return grid;
+		}
+
 
 		static Hashtable hashtable = new Hashtable ();
 		static bool isGo = false;

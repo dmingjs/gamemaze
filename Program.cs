@@ -8,27 +8,18 @@ namespace GameMazeCreator_01
 		{
 			Console.WriteLine ("Hello World!");
 
-			BasicMazeCreator maze = new BasicMazeCreator (9, 6, "");
-			//int[,] map = MazeCommon.CreateMapByGrid (maze.InitGrid_WithBlocks());
+			BasicMazeCreator maze = new BasicMazeCreator (9, 9, "");
+
 			int[,] grid = maze.GrowingTree_Maze();
-			int[,] gridx2 = MazeCommon.GridScaleDouble (grid);
-			int[,] map = MazeCommon.CreateMapByGrid(grid);
-			int[,] map2 = MazeCommon.CreateMapByScaleDoubleGrid (gridx2);
-			//MazeCommon.PrintArray (grid);
+			int[,] gridAdjust = MazeCommon.AdjustMazeBorder (grid);
+			int[,] gridx2Adjust = MazeCommon.GridScaleDoubleWithBlock (gridAdjust);
+			int[,] map = MazeCommon.CreateMapByGrid (gridx2Adjust);
+			int[,] mapx2 = MazeCommon.CreateMapByScaleDoubleGrid (gridx2Adjust);
+			int[,] gridx2AdjustSpace = MazeCommon.MazeInsertSpace (gridx2Adjust, 6);
+			int[,] mapAdjustV2 = MazeCommon.CreateMapByScaleDoubleGrid (gridx2AdjustSpace);
+
+			MazeCommon.Print2DArrayWithWall (mapAdjustV2);
 			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
-			MazeCommon.Print2DArray (map2);
-			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
-			MazeCommon.Print2DArray (map);
-			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
-			MazeCommon.Print2DArrayWithWall (map);
-			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
-			MazeCommon.Print2DArrayWithWall (map2);
-			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
-			int[,] spacegrid = MazeCommon.MazeInsertSpace (gridx2, 6);
-			int[,] spacemap = MazeCommon.CreateMapByScaleDoubleGrid (spacegrid);
-			MazeCommon.Print2DArrayWithWall (spacemap);
-			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
-			MazeCommon.Print2DArray (spacemap);
 			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
 			Console.Read ();
 		}
