@@ -96,6 +96,7 @@ namespace GameMazeCreator_01
 		public Maze GrowingTree_Maze() 
 		{
 			return GrowingTree_Maze(new Maze(this.width, this.height));
+			#region old code
 			/*
 
 			int height = this.height;
@@ -144,6 +145,7 @@ namespace GameMazeCreator_01
 			}
 
 			return maze;*/
+			#endregion
 		}
 
 		public Maze GrowingTree_Maze(Maze maze)

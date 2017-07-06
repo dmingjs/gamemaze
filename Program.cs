@@ -35,6 +35,7 @@ namespace GameMazeCreator_01
 			MazeGeneratorCommon.InitMazeByNeighbors (maze);
 			maze = mazeCreator.GrowingTree_Maze (maze);
 			//Maze mazeAdjust = MazeGeneratorCommon.AdjustMazeBorder (maze);
+			//int[,] map = MazeGeneratorCommon.CreateMapByMaze (MazeGeneratorCommon.AdjustMazeLevel(maze));
 			int[,] map = MazeGeneratorCommon.CreateMapByMaze (maze);
 
 			int[,] mapN = MazeGeneratorCommon.CreateMapByMaze (mazeN);

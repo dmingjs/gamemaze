@@ -513,22 +513,22 @@ namespace GameMazeCreator_01
 					for (int tempY = 0; tempY < spaces [i, j].height; tempY++) {
 						for (int tempX = 0; tempX < spaces [i, j].width; tempX++) {
 							
-							gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] |= (N + S + W + E);
+							gird [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j] |= (N + S + W + E);
 
 							if (tempY == 0 && 
-								(gird [tempY + spaces [i, j].y + split * i - 1, tempX + spaces [i, j].x + split * j] & S) == 0) {
-								gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= N;
+								(gird [tempY + spaces [i, j].anchor.y + split * i - 1, tempX + spaces [i, j].anchor.x + split * j] & S) == 0) {
+								gird [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j] -= N;
 							} else if (tempY == (spaces [i, j].height - 1) &&
-								(gird [tempY + spaces [i, j].y + split * i + 1, tempX + spaces [i, j].x + split * j] & N) == 0){
-								gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= S;
+								(gird [tempY + spaces [i, j].anchor.y + split * i + 1, tempX + spaces [i, j].anchor.x + split * j] & N) == 0){
+								gird [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j] -= S;
 							}
 
 							if (tempX == 0 &&
-								(gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j - 1] & E) == 0) {
-								gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= W;
+								(gird [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j - 1] & E) == 0) {
+								gird [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j] -= W;
 							} else if  (tempX == (spaces [i, j].width - 1) &&
-								(gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j + 1] & W) == 0) {
-								gird [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j] -= E;
+								(gird [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j + 1] & W) == 0) {
+								gird [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j] -= E;
 							}
 						}
 					}
@@ -629,17 +629,21 @@ namespace GameMazeCreator_01
 	}
 
 	public struct Space {
-		public int x;
-		public int y;
+		//public int x;
+		//public int y;
+		public Point anchor;
 		public int height;
 		public int width;
 		public int level;
+		public List<Point> addOn; //save the add on points of space area. the coodinate is the actual point's coodinate of (y, x);
+		public List<Point> paths;
 		public Space(int x, int y, int width, int height){
-			this.x = x;
-			this.y = y;
+			this.anchor = new Point (x, y);
 			this.width = width;
 			this.height = height;
 			this.level = 0;
+			this.addOn = new List<Point> ();
+			this.paths = new List<Point> ();
 		}
 
 		public Space(int x, int y, int width, int height, int level) : this (x, y, width, height) {

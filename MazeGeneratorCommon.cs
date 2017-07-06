@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GameMazeCreator_01
 {
@@ -506,22 +507,22 @@ namespace GameMazeCreator_01
 					for (int tempY = 0; tempY < spaces [i, j].height; tempY++) {
 						for (int tempX = 0; tempX < spaces [i, j].width; tempX++) {
 
-							grid [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j].direction |= (MazeCommon.N + MazeCommon.S + MazeCommon.W + MazeCommon.E);
+							grid [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j].direction |= (MazeCommon.N + MazeCommon.S + MazeCommon.W + MazeCommon.E);
 
 							if (tempY == 0 && 
-								(grid [tempY + spaces [i, j].y + split * i - 1, tempX + spaces [i, j].x + split * j].direction & MazeCommon.S) == 0) {
-								grid [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j].direction -= MazeCommon.N;
+								(grid [tempY + spaces [i, j].anchor.y + split * i - 1, tempX + spaces [i, j].anchor.x + split * j].direction & MazeCommon.S) == 0) {
+								grid [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j].direction -= MazeCommon.N;
 							} else if (tempY == (spaces [i, j].height - 1) &&
-								(grid [tempY + spaces [i, j].y + split * i + 1, tempX + spaces [i, j].x + split * j].direction & MazeCommon.N) == 0){
-								grid [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j].direction -= MazeCommon.S;
+								(grid [tempY + spaces [i, j].anchor.y + split * i + 1, tempX + spaces [i, j].anchor.x + split * j].direction & MazeCommon.N) == 0){
+								grid [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j].direction -= MazeCommon.S;
 							}
 
 							if (tempX == 0 &&
-								(grid [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j - 1].direction & MazeCommon.E) == 0) {
-								grid [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j].direction -= MazeCommon.W;
+								(grid [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j - 1].direction & MazeCommon.E) == 0) {
+								grid [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j].direction -= MazeCommon.W;
 							} else if  (tempX == (spaces [i, j].width - 1) &&
-								(grid [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j + 1].direction & MazeCommon.W) == 0) {
-								grid [tempY + spaces [i, j].y + split * i, tempX + spaces [i, j].x + split * j].direction -= MazeCommon.E;
+								(grid [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j + 1].direction & MazeCommon.W) == 0) {
+								grid [tempY + spaces [i, j].anchor.y + split * i, tempX + spaces [i, j].anchor.x + split * j].direction -= MazeCommon.E;
 							}
 						}
 					}
@@ -533,6 +534,73 @@ namespace GameMazeCreator_01
 			return maze;
 		}
 
-		//public static Maze 
+		public static Maze AdjustMazeLevel (Maze maze){
+			int height = maze.terrainMaze.GetLength (0);
+			int width = maze.terrainMaze.GetLength (1);
+			Cell[,] terrainGrid = maze.terrainMaze.Clone () as Cell[,];
+			Maze newMaze = AdjustMazeSpaces (maze);
+
+			//List<Cell> 
+			return newMaze;
+		}
+
+		static Maze AdjustMazeSpaces(Maze maze) {
+			int height = maze.terrainMaze.GetLength (0);
+			int width = maze.terrainMaze.GetLength (1);
+			Cell[,] terrainGrid = maze.terrainMaze.Clone () as Cell[,];
+			Space[,] spacesClone = maze.spaces.Clone () as Space[,];
+			// scaling the space blockers of maze.spaces; save the add on point in the addOn list;
+			int lenY = spacesClone.GetLength (0);
+			int lenX = spacesClone.GetLength (1);
+			for (int numY = 0; numY < lenY; numY++) {
+				for (int numX = 0; numX < lenX; numX++) {
+					// check the space area here, and save the add on points in list
+					// infect from space area, only the 2 directions cell should not be add to the list
+					Space tempSpace = spacesClone [numY, numX];
+					List<Point> checkedList = new List<Point>();
+					List<Point> tempList = new List<Point>();
+					for (int h = 0; h < tempSpace.height; h++) {
+						for (int w = 0; h < tempSpace.width; w++) {
+							tempList.Add (new Point (tempSpace.anchor.y + h, tempSpace.anchor.x + w));
+							checkedList.Add (new Point (tempSpace.anchor.y + h, tempSpace.anchor.x + w));
+						}
+					}
+
+					while (tempList.Count > 0) {
+						int index = tempList.Count;
+						Point p = tempList [index - 1];
+						for (int i = 0; i < 4; i++) {
+							int dr = MazeCommon.DR [i];
+							int ny = p.y + MazeCommon.DY [dr]; int nx = p.x + MazeCommon.DX [dr];
+							if (ny >= 0 && ny < height && nx >= 0 && nx < width &&
+								(terrainGrid [ny, nx].direction & MazeCommon.OPPOSITE [dr]) != 0) { // at first ,the point (ny, nx) should be valid
+
+								bool isPath = false;
+								if ((terrainGrid [ny, nx].direction & MazeCommon.N) != 0 && (terrainGrid [ny, nx].direction & MazeCommon.S) != 0 &&
+									(terrainGrid [ny, nx].direction & MazeCommon.W) == 0 && (terrainGrid [ny, nx].direction & MazeCommon.E) == 0) {
+									isPath = true;
+								} else if ((terrainGrid [ny, nx].direction & MazeCommon.N) == 0 && (terrainGrid [ny, nx].direction & MazeCommon.S) == 0 &&
+									(terrainGrid [ny, nx].direction & MazeCommon.W) != 0 && (terrainGrid [ny, nx].direction & MazeCommon.E) != 0) {
+									isPath = true;
+								}
+								Point tempPoint = new Point (nx, ny);
+								if (!isPath) {
+
+									tempList.Add (tempPoint);
+									tempSpace.addOn.Add (tempPoint);
+								} else {
+									tempSpace.paths.Add (tempPoint);
+								}
+							}
+
+						}
+						tempList.RemoveAt (index - 1);
+					}
+					spacesClone [numY, numX] = tempSpace;
+				}
+			}
+			maze.spaces = spacesClone;
+			return maze;
+		}
 	}
 }
