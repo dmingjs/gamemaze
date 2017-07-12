@@ -55,7 +55,39 @@ namespace GameMazeCreator_01
 			maze = MazeGeneratorCommon.TerrainMazeInsertSpaces (maze, 6);
 			terrainMap = MazeGeneratorCommon.CreateMapByTerrainMaze (maze);
 			MazeCommon.Print2DArrayWithWall (terrainMap);
+			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
+			MazeGeneratorCommon.CellType[,] levelGrid = MazeGeneratorCommon.GetCellTypeGrid4Level (maze);
+			MazeGeneratorCommon.PrintComplexTerrainMapWithLevelGrid (terrainMap, levelGrid);
+			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
+			for (int i = 0; i < levelGrid.GetLength (0); i++) {
+				for (int j = 0; j < levelGrid.GetLength (1); j++) {
+					//Console.Write ((int)levelGrid [i, j]);
+					if ((levelGrid [i, j] == MazeGeneratorCommon.CellType.BLOCK))
+						Console.Write ("#");
+					else if ((levelGrid [i, j] == MazeGeneratorCommon.CellType.DOOR))
+						Console.Write ("D");
+					else if ((levelGrid [i, j] == MazeGeneratorCommon.CellType.PATH))
+						Console.Write ("P");
+					else if ((levelGrid [i, j] == MazeGeneratorCommon.CellType.SPACE))
+						Console.Write (".");
+					else
+						Console.Write (" ");
+				}
+				Console.WriteLine ();
+			}
+			Console.WriteLine ("\n~~~~~~~~~~~~~~~~~~~line~~~~~~~~~~~~~\n");
 
+			System.Collections.Generic.Dictionary<Point, Door> da = MazeGeneratorCommon.GetRoadByCellTypeGrid (maze.terrainMaze, levelGrid, maze.spaces);
+			//Console.WriteLine (da.Count);
+			foreach (var d in da) {
+				if (d.Value.adjvex.Count == 0) {
+					Console.WriteLine ("wrong in {0}", d.Value.coordinate.ToString ());
+				} else {
+					Console.WriteLine ("point ({0}, {1}) adjvex count is {2}", d.Key.x, d.Key.y, d.Value.adjvex.Count);
+				}
+			}
+
+			maze = MazeGeneratorCommon.CreateMazeWithLevel (maze);
 			Console.Read ();
 		}
 	}
