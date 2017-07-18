@@ -629,27 +629,5 @@ namespace GameMazeCreator_01
 
 	}
 
-	public struct Space {
-		//public int x;
-		//public int y;
-		public Point anchor;
-		public int height;
-		public int width;
-		public int level;
-		public List<Point> addOn; //save the add on points of space area. the coodinate is the actual point's coodinate of (y, x);
-		public List<Point> paths;
-		public Space(int x, int y, int width, int height){
-			this.anchor = new Point (x, y);
-			this.width = width;
-			this.height = height;
-			this.level = 0;
-			this.addOn = new List<Point> ();
-			this.paths = new List<Point> ();
-		}
-
-		public Space(int x, int y, int width, int height, int level) : this (x, y, width, height) {
-			this.level = level;
-		}
-	}
 }
 

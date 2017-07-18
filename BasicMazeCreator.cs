@@ -243,58 +243,5 @@ namespace GameMazeCreator_01
 		#endregion
 	}
 
-	public struct Point
-	{
-		public int x, y;
-		public Point(int x, int y)
-		{
-			this.x = x;
-			this.y = y;
-		}
-	}
-
-	public struct Block {
-		public int level; // 1 is space, 2 is blocker, 3 is water
-		public int[,] block;
-		public int width;
-		public int height;
-		public Point anchor;
-	}
-
-	public struct Cell {
-		//public Point point;
-		public int direction;
-		public bool visited;
-		public int[,] block;
-		public int level;
-	}
-
-	public struct Maze {
-		public Cell[,] maze;
-		public Cell[,] terrainMaze;
-		public Space[,] spaces;
-		public Dictionary<int, Maze> neighborMazes;
-		public Maze(int width, int height) {
-			this.maze = new Cell[height, width];
-			for (int i = 0; i < height; i++) {
-				for (int j = 0; j < width; j++) {
-					this.maze [i, j].direction = 0;
-					this.maze [i, j].visited = false;
-					this.maze [i, j].level = 0;
-				}
-			}
-			this.terrainMaze = new Cell[0, 0];
-			this.spaces = new Space[0, 0];
-			this.neighborMazes = new Dictionary<int, Maze> ();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GameMazeCreator_01.Maze"/> struct.
-		/// default is width == 9, height == 9;
-		/// </summary>
-		public Maze() : this (9, 9) {
-		}
-	}
-	
 }
 
